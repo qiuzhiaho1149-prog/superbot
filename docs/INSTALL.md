@@ -3,7 +3,7 @@
 ## 支持范围
 - DSH CLI **0.2.1-rc.5**：已实测（隔离 profile + 真机闭环）。
 - DSH core **0.2.2-rc.1**：已实测 smoke（preset 注册、status、onboarding、overview、面板）。
-- 桌面 App（0.2.2-rc.1）：自带 CLI 安装到 `desktop` profile 已验证到插件加载层；App 重启后的 UI 验收未在本机执行。桌面安装见 `docs/桌面安装步骤.md`。
+- 桌面 App（0.2.2-rc.1）：自带 CLI 安装到 `desktop` profile 已验证到插件加载层；App 重启后的 UI 验收未在本机执行。桌面安装：见 `docs/桌面安装步骤.md` 的一键脚本（自包含，无需本地仓库/依赖）。
 
 ## 一键安装（推荐）
 
