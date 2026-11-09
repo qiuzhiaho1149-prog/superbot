@@ -143,7 +143,7 @@
 - 新增 `test/auto-audit-e2e.test.js`：fake host 下完整链路 **worker 结束 → 自动派 verifier → verifier 执行验收命令+提交 pass → autoReview → policy done**，1 用例通过。
 - 历史导入 E2E（模拟 2–3 个月旧 DSH、全新账本）：扫描→勾选数据→`POST /superbot/history/import` → ledger tasks=1、phase=queued；证据 `reports/install-history-test-2026-11-08/evidence/history-import-*.json`。
 - 版本确认：CLI 0.2.1-rc.5（PASS），桌面 App 0.2.2-rc.1（engines 明确排除：`>=0.2.1-rc.5 <0.2.2-0`，**NOT RUN**）。
-- 测试 149 + 18 = 167 PASS。
+- 测试 154 + 18 = 172 PASS。
 
 ## 13. 目标轮 5：DSH 0.2.2-rc.1 兼容实测
 
@@ -157,4 +157,4 @@
 - 真实 DeepSeek 模型在 DSH 0.2.1-rc.5 下，Manager preset 成功调用 `superbot_fleet_status`，并基于账本事实汇报（2 项目/3 任务/1 worker 运行中/1 待验收）；证据与截图落盘。
 - 商店素材：深/浅色任务板、地图、历史、真实会话截图（`reports/store-v1/`）。
 - 新增 `docs/上架检查表.md`：15 项 PASS/PARTIAL/NOT RUN 汇总；剩桌面 App 安装（需授权）、U2 样式收尾、文案复核。
-- 测试 149 + 18 = 167 PASS。
+- 测试 154 + 18 = 172 PASS。

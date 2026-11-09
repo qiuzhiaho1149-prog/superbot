@@ -10,6 +10,7 @@ import { buildTimeline } from './timeline.js'
 import { importHistoryWork } from './history-import.js'
 import { deriveTaskPhase } from './task-phase.js'
 import { buildOverview } from './overview.js'
+import { buildProjectHandoff, writeProjectHandoff } from './project-handoff.js'
 import { dshHomeOf, scanInventory } from './onboarding.js'
 import { createPresetDefinitions } from './presets.js'
 import { PRESET_IDS, ROLES } from './roles.js'
@@ -69,6 +70,47 @@ export function apply(ctx, initialConfig = {}) {
   // ── persistent work ledger ────────────────────────────────────────────────
   const store = createWorkStore({ stateDir, actor: 'manager' })
   if (typeof ctx.effect === 'function') ctx.effect(() => () => store.dispose())
+
+  // Per-project handoff: regenerated from the ledger shortly after a relevant
+  // event. It is written INTO the project so the work can continue when the
+  // plugin is disabled; it is bounded and never contains chat transcripts.
+  const handoffTimers = new Map()
+  const scheduleProjectHandoff = (projectId) => {
+    if (config.projectHandoff === false || typeof projectId !== 'string' || projectId === '') return
+    if (handoffTimers.has(projectId)) return
+    const timer = setTimeout(() => {
+      handoffTimers.delete(projectId)
+      try {
+        const project = readProjects(ctx).projects.find((entry) => entry.workspaceId === projectId)
+        if (project === undefined || typeof project.path !== 'string' || project.path === '') return
+        const markdown = buildProjectHandoff({ store, project: { projectId: project.workspaceId, title: project.title, path: project.path } })
+        writeProjectHandoff(project.path, markdown, { fileName: config.handoffFile ?? 'SUPERBOT-HANDOFF.md' })
+      } catch (error) {
+        ctx.logger?.warn?.(`dsh-superbot: project handoff failed for ${projectId}: ${String(error?.message ?? error)}`)
+      }
+    }, 400)
+    if (typeof timer.unref === 'function') timer.unref()
+    handoffTimers.set(projectId, timer)
+  }
+  const unsubscribeHandoff = store.onAppend((event) => {
+    const projectIds = new Set()
+    if (event?.task?.projectId) projectIds.add(event.task.projectId)
+    if (typeof event?.taskId === 'string') {
+      const task = store.getTask(event.taskId)
+      if (task?.projectId) projectIds.add(task.projectId)
+    }
+    if (Array.isArray(event?.inventory?.projects)) {
+      for (const project of event.inventory.projects) if (typeof project.projectId === 'string') projectIds.add(project.projectId)
+    }
+    for (const projectId of projectIds) scheduleProjectHandoff(projectId)
+  })
+  if (typeof ctx.effect === 'function') {
+    ctx.effect(() => () => {
+      unsubscribeHandoff()
+      for (const timer of handoffTimers.values()) clearTimeout(timer)
+      handoffTimers.clear()
+    })
+  }
   const service = {
     schemaVersion: WORK_SCHEMA_VERSION,
     stateDir,

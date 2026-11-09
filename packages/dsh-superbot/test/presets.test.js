@@ -91,7 +91,7 @@ describe('agent preset definitions', () => {
 
 describe('role tool scopes', () => {
   it('gives manager the full surface and the worker/verifier narrow subsets', () => {
-    assert.equal(ROLE_TOOLS.manager.length, 32)
+    assert.equal(ROLE_TOOLS.manager.length, 33)
     assert.equal(ROLE_TOOLS.worker.length, 6)
     assert.equal(ROLE_TOOLS.verifier.length, 8)
     assert.equal(isToolAllowed('manager', TOOL_NAMES.dispatchWorker), true)
@@ -136,7 +136,7 @@ describe('role tool scopes', () => {
     const context = fake({ superbot: { store: store(), getConfig: () => ({}) } })
     applyGlobalTools(context.ctx)
     const names = context.tools.map((tool) => tool.name)
-    assert.equal(names.length, 29)
+    assert.equal(names.length, 30)
     assert.equal(names.includes(TOOL_NAMES.dispatchWorker), false)
     assert.equal(names.includes(TOOL_NAMES.dispatchVerifier), false)
     assert.equal(names.includes(TOOL_NAMES.planDispatch), false)
@@ -144,7 +144,7 @@ describe('role tool scopes', () => {
     assert.equal(names.includes(TOOL_NAMES.planCreate), true)
     assert.equal(names.includes(TOOL_NAMES.taskSubmit), true)
     assert.ok(context.logs.warn.some((line) => line.includes('legacy mode')))
-    assert.equal(context.ctx.get('superbot').globalTools.toolCount, 29)
+    assert.equal(context.ctx.get('superbot').globalTools.toolCount, 30)
   })
 })
 

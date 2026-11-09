@@ -424,6 +424,7 @@ export class WorkStore {
   #events = []
   #corrupt = 0
   #nextSeq = 1
+  #listeners = []
   #projectionTimer = null
   #projectionDirty = false
   #state = emptyProjection()
@@ -498,6 +499,13 @@ export class WorkStore {
   }
 
   /** Append one well-formed envelope; advances the in-memory projection. */
+  /** Subscribe to appended events (in-process); returns an unsubscribe function. */
+  onAppend(listener) {
+    if (typeof listener !== 'function') return () => {}
+    this.#listeners.push(listener)
+    return () => { this.#listeners = this.#listeners.filter((entry) => entry !== listener) }
+  }
+
   #append(kind, payload = {}, { actor, reason, at } = {}) {
     if (!WORK_EVENT_KINDS.includes(kind)) throw new Error(`unknown work event kind: ${String(kind)}`)
     const event = {
@@ -510,6 +518,9 @@ export class WorkStore {
       ...payload,
     }
     appendEvent(this.#paths.events, event)
+    for (const listener of this.#listeners) {
+      try { listener(clone(event)) } catch { /* listeners are best-effort */ }
+    }
     this.#events.push(event)
     this.#nextSeq += 1
     // Keep the fold counters authoritative: after a live append, an event that

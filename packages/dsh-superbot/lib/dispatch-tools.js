@@ -26,6 +26,7 @@ import { acceptByPolicy, classifyAcceptance } from './task-engine.js'
 
 import { PRESET_IDS, TOOL_NAMES } from './roles.js'
 import { fingerprintWorkspace } from './workspace-snapshot.js'
+import { HANDOFF_FILE_NAME } from './project-handoff.js'
 import { isRunActive } from './work-store.js'
 import { readProjects } from './workspace-service.js'
 
@@ -96,6 +97,10 @@ export function buildTaskBrief(task, { store, workspaceId, cwd, runId, note, kin
   if (isNonEmptyString(cwd)) lines.push(`- 工作目录: ${cwd}`)
   lines.push('- 只在该项目内改动；不要访问其他项目、真实用户 profile、凭据或全局配置。')
   lines.push('- 不要新建/切换分支或 worktree，除非 brief 明确要求。')
+  lines.push('')
+  lines.push('## 1b. 项目交接（先读，省上下文）')
+  lines.push(`- 若 \`${isNonEmptyString(cwd) ? cwd : '<项目根>'}/${HANDOFF_FILE_NAME}\` 存在，先读它：目标、进行中、待决策、验收命令、约束都在里面；不要要求 manager 复述历史。`)
+  lines.push('- 交接文件只是背景；当前任务的 brief 与验收命令优先，验收仍以账本证据为准。')
   lines.push('')
   lines.push('## 2. 背景与目标')
   if (isNonEmptyString(task.context)) {

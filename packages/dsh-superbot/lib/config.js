@@ -25,6 +25,9 @@ export const DEFAULT_CONFIG = Object.freeze({
   httpHumanActions: false,
   /** S0: after a task-bound worker finishes, dispatch the verifier automatically. */
   autoAudit: true,
+  /** Per-project handoff file (SUPERBOT-HANDOFF.md) for off-state continuity. */
+  projectHandoff: true,
+  handoffFile: 'SUPERBOT-HANDOFF.md',
   /** P0-1: run acceptance in a one-time copy ('copy', default) or the live tree ('in-place', unsafe). */
   acceptanceIsolation: 'copy',
 })
@@ -84,6 +87,14 @@ export function validateConfigPatch(patch) {
   if ('httpHumanActions' in patch) {
     if (typeof patch.httpHumanActions !== 'boolean') throw new Error('httpHumanActions must be boolean')
     out.httpHumanActions = patch.httpHumanActions
+  }
+  if ('projectHandoff' in patch) {
+    if (typeof patch.projectHandoff !== 'boolean') throw new Error('projectHandoff must be boolean')
+    out.projectHandoff = patch.projectHandoff
+  }
+  if ('handoffFile' in patch) {
+    if (typeof patch.handoffFile !== 'string' || patch.handoffFile.trim() === '' || patch.handoffFile.includes('/')) throw new Error('handoffFile must be a plain file name')
+    out.handoffFile = patch.handoffFile.trim()
   }
   if ('acceptanceIsolation' in patch) {
     if (patch.acceptanceIsolation !== 'copy' && patch.acceptanceIsolation !== 'in-place') throw new Error("acceptanceIsolation must be 'copy' or 'in-place'")

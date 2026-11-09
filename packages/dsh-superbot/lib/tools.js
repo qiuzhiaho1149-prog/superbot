@@ -14,6 +14,7 @@
 import { join } from 'node:path'
 
 import { acceptByPolicy, buildHandoff, classifyAcceptance } from './task-engine.js'
+import { buildProjectHandoff, writeProjectHandoff } from './project-handoff.js'
 import { createAcceptanceWorkspace } from './acceptance-workspace.js'
 import { importHistoryWork } from './history-import.js'
 import { checkAcceptanceCommand, checkDeclaredCommands, commandPolicyError } from './command-policy.js'
@@ -362,6 +363,29 @@ export function createTaskTools({ getConfig = () => ({}), store, ctx } = {}) {
       execute(args) {
         enabledOrThrow(getConfig)
         return { reports: store.listReports({ taskId: args.taskId, runId: args.runId }) }
+      },
+    },
+    {
+      name: TOOL_NAMES.projectHandoff,
+      description: 'Generate the per-project handoff file (SUPERBOT-HANDOFF.md) from the ledger, so work can continue when Superbot is turned off. Bounded (<4KB): goal, open tasks, acceptance commands, constraints, next steps. Writes only into that project root; refuses to overwrite a foreign file. Manager-only.',
+      parameters: {
+        type: 'object', additionalProperties: false, required: ['projectId'],
+        properties: {
+          projectId: { type: 'string' },
+          write: { type: 'boolean', description: 'Write the file (default true); false only renders it.' },
+        },
+      },
+      output: objectOutput,
+      execute(args) {
+        enabledOrThrow(getConfig)
+        const inventory = readProjects(ctx)
+        const project = inventory.projects.find((entry) => entry.workspaceId === args.projectId || entry.projectId === args.projectId)
+        if (project === undefined) throw new Error(`unknown project: ${args.projectId}`)
+        if (typeof project.path !== 'string' || project.path === '') throw new Error(`project ${args.projectId} has no filesystem path`)
+        const markdown = buildProjectHandoff({ store, project: { projectId: project.workspaceId, title: project.title, path: project.path } })
+        const write = args.write !== false
+        const result = write ? writeProjectHandoff(project.path, markdown, { fileName: getConfig().handoffFile ?? 'SUPERBOT-HANDOFF.md' }) : { path: null, written: false, bytes: Buffer.byteLength(markdown, 'utf8') }
+        return { projectId: project.workspaceId, ...result, markdown: markdown.length > 8_000 ? `${markdown.slice(0, 8_000)}…` : markdown }
       },
     },
     {
