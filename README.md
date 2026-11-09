@@ -60,7 +60,7 @@ DSH_HOME="$DSH_HOME" dsh --profile web --no-open --port 0
 
 - [安装/自检](docs/INSTALL.md) · [桌面安装步骤](docs/桌面安装步骤.md) · [上架说明](docs/上架说明-v1.md) · [上架检查表](docs/上架检查表.md)
 - [审核隔离与多层级设计](docs/Superbot-审核隔离与多层级设计-v1.md) · [面板设计规范](docs/面板设计规范-v1.md)
-- [口语需求路由与改写](docs/INTENT-ROUTING.md) · [开关与项目交接](docs/HANDOFF-AND-TOGGLE.md) · [维护手册](docs/MAINTAINER-PLAYBOOK.md) · [Release 记录](reports/v1-release-RELEASE.md)
+- [首次接入与多 Session 规划](docs/PROJECT-BOOTSTRAP-AND-WORKSTREAMS.md) · [口语需求路由与改写](docs/INTENT-ROUTING.md) · [开关与项目交接](docs/HANDOFF-AND-TOGGLE.md) · [维护手册](docs/MAINTAINER-PLAYBOOK.md) · [Release 记录](reports/v1-release-RELEASE.md)
 - 商店素材：[reports/store-v1/](reports/store-v1/)
 
 ## 开发

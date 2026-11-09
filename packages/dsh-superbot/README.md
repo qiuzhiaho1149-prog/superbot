@@ -19,7 +19,7 @@ Superbot：DSH 的核心调度员工插件。一个 Manager 会话管理所有�
 node --test test/*.test.js
 ```
 
-当前：158 条（v1.0.0 release candidate）。打包：`npm pack`。
+当前：161 条（v1.0.0 release candidate）。打包：`npm pack`。
 
 ## 安全默认
 

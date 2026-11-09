@@ -4,6 +4,7 @@
  */
 
 import { matchRequirement, readProjects } from './workspace-service.js'
+import { PROJECT_FILE_NAME, renderProjectMap, scanProjectProfile, writeProjectMap } from './project-profile.js'
 
 const textRender = (_args, value) => [{ type: 'text', text: typeof value === 'string' ? value : JSON.stringify(value) }]
 const objectOutput = { schema: { type: 'object', additionalProperties: true }, render: textRender }
@@ -38,6 +39,29 @@ export function createProjectTools(ctx, { getConfig } = {}) {
         if (text === '') throw new Error('text is required')
         const inventory = readProjects(ctx)
         return { source: inventory.source, ...matchRequirement(text, inventory.projects) }
+      },
+    },
+    {
+      name: 'superbot_project_profile',
+      description: 'Read-only reconnaissance for one project: stack, commands, top-level map, harness gaps (AGENTS/CI/handoff/test). Optionally writes SUPERBOT-PROJECT.md. Use BEFORE planning implementation on a project you have not worked in; never executes project code.',
+      parameters: {
+        type: 'object', additionalProperties: false, required: ['projectId'],
+        properties: {
+          projectId: { type: 'string' },
+          write: { type: 'boolean', description: 'Write SUPERBOT-PROJECT.md (default true).' },
+        },
+      },
+      output: objectOutput,
+      execute(args) {
+        enabledOrThrow()
+        const inventory = readProjects(ctx)
+        const project = inventory.projects.find((entry) => entry.workspaceId === args.projectId || entry.projectId === args.projectId)
+        if (project === undefined) throw new Error(`unknown project: ${args.projectId}`)
+        const profile = scanProjectProfile({ projectId: project.workspaceId, title: project.title, path: project.path })
+        const markdown = renderProjectMap(profile)
+        const write = args.write !== false
+        const written = write ? writeProjectMap(project.path, markdown, { fileName: PROJECT_FILE_NAME }) : { path: null, written: false, bytes: 0 }
+        return { ...profile, profileWritten: written.written, profilePath: written.path, map: markdown.slice(0, 8_000) }
       },
     },
   ]

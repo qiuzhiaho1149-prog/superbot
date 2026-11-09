@@ -52,6 +52,7 @@ export const TOOL_NAMES = Object.freeze({
   workRebuild: 'superbot_work_rebuild',
   handoff: 'superbot_handoff',
   projectHandoff: 'superbot_project_handoff',
+  projectProfile: 'superbot_project_profile',
   projectList: 'superbot_project_list',
   projectMatch: 'superbot_project_match',
   projectOverview: 'superbot_project_overview',
@@ -71,7 +72,7 @@ const {
   requirementSubmit, requirementList, specRecord, planCreate, planGet, planDispatch,
   taskSubmit, taskPlan, taskList, taskGet, taskClaim, taskReview, taskReport,
   reportList, runList, runFinish, reviewSubmit, reviewList, auditExport,
-  workRebuild, handoff, projectHandoff, projectList, projectMatch, projectOverview, dispatchWorker,
+  workRebuild, handoff, projectHandoff, projectProfile, projectList, projectMatch, projectOverview, dispatchWorker,
   dispatchVerifier, acceptanceRun, taskAccept, taskRework, taskCancel, historyImport, fleetStatus, onboardingScan, onboardingConfirm,
 } = TOOL_NAMES
 
@@ -83,7 +84,7 @@ export const ROLE_TOOLS = Object.freeze({
   manager: Object.freeze([
     requirementSubmit, requirementList, specRecord, planCreate, planGet, planDispatch,
     taskSubmit, taskPlan, taskList, taskGet, taskClaim, taskReview, taskAccept, taskRework, taskCancel, historyImport, fleetStatus, taskReport,
-    reportList, runList, runFinish, reviewList, auditExport, workRebuild, handoff, projectHandoff,
+    reportList, runList, runFinish, reviewList, auditExport, workRebuild, handoff, projectHandoff, projectProfile,
     projectList, projectMatch, projectOverview, onboardingScan, onboardingConfirm,
     dispatchWorker, dispatchVerifier,
   ]),

@@ -11,6 +11,7 @@ import { importHistoryWork } from './history-import.js'
 import { deriveTaskPhase } from './task-phase.js'
 import { buildOverview } from './overview.js'
 import { buildProjectHandoff, writeProjectHandoff } from './project-handoff.js'
+import { PROJECT_FILE_NAME, renderProjectMap, scanProjectProfile, writeProjectMap } from './project-profile.js'
 import { dshHomeOf, scanInventory } from './onboarding.js'
 import { createPresetDefinitions } from './presets.js'
 import { PRESET_IDS, ROLES } from './roles.js'
@@ -83,6 +84,14 @@ export function apply(ctx, initialConfig = {}) {
       try {
         const project = readProjects(ctx).projects.find((entry) => entry.workspaceId === projectId)
         if (project === undefined || typeof project.path !== 'string' || project.path === '') return
+        if (!existsSync(join(project.path, PROJECT_FILE_NAME))) {
+          try {
+            const profile = scanProjectProfile({ projectId: project.workspaceId, title: project.title, path: project.path })
+            writeProjectMap(project.path, renderProjectMap(profile), { fileName: PROJECT_FILE_NAME })
+          } catch (error) {
+            ctx.logger?.warn?.(`dsh-superbot: project profile failed for ${projectId}: ${String(error?.message ?? error)}`)
+          }
+        }
         const markdown = buildProjectHandoff({ store, project: { projectId: project.workspaceId, title: project.title, path: project.path } })
         writeProjectHandoff(project.path, markdown, { fileName: config.handoffFile ?? 'SUPERBOT-HANDOFF.md' })
       } catch (error) {

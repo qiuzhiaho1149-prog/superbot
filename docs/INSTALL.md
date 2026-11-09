@@ -14,14 +14,14 @@ dsh --version
 ```
 2. 下载并校验：
 ```bash
-curl -L -o /tmp/dsh-superbot-1.2.0.tgz \
-  https://github.com/qiuzhiaho1149-prog/superbot/releases/download/v1.2.0/dsh-superbot-1.2.0.tgz
-shasum -a 256 /tmp/dsh-superbot-1.2.0.tgz
-# 应为 dsh-superbot-1.2.0.tgz 的 SHA256（见 release 的 SHA256SUMS）
+curl -L -o /tmp/dsh-superbot-1.3.0.tgz \
+  https://github.com/qiuzhiaho1149-prog/superbot/releases/download/v1.3.0/dsh-superbot-1.3.0.tgz
+shasum -a 256 /tmp/dsh-superbot-1.3.0.tgz
+# 应为 dsh-superbot-1.3.0.tgz 的 SHA256（见 release 的 SHA256SUMS）
 ```
 3. 安装到 profile 并登记 bundle：
 ```bash
-dsh plugin --profile web add /tmp/dsh-superbot-1.2.0.tgz
+dsh plugin --profile web add /tmp/dsh-superbot-1.3.0.tgz
 PROFILE="${DSH_HOME:-$HOME/.dsh}/profiles/web/package.json"
 cp "$PROFILE" "$PROFILE.bak"
 node - "$PROFILE" <<'NODE'

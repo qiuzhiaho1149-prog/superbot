@@ -1,6 +1,6 @@
 {
   "name": "dsh-superbot",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "private": false,
   "description": "DSH plugin: Superbot control plane — manager/worker/verifier presets, ledger-backed task/run/evidence/review, acceptance isolation, auto audit, history onboarding, result-oriented panel and Gantt map.",
   "type": "module",
