@@ -1,0 +1,50 @@
+{
+  "name": "dsh-superbot",
+  "version": "1.0.0",
+  "private": false,
+  "description": "DSH plugin: Superbot control plane — manager/worker/verifier presets, ledger-backed task/run/evidence/review, acceptance isolation, auto audit, history onboarding, result-oriented panel and Gantt map.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./config": "./lib/config.js",
+    "./context-policy": "./lib/context-policy.js",
+    "./dispatch-tools": "./lib/dispatch-tools.js",
+    "./event-log": "./lib/event-log.js",
+    "./global-tools": "./lib/global-tools.js",
+    "./planning-tools": "./lib/planning-tools.js",
+    "./preset-tools": "./lib/preset-tools.js",
+    "./presets": "./lib/presets.js",
+    "./project-tools": "./lib/project-tools.js",
+    "./roles": "./lib/roles.js",
+    "./session-policy": "./lib/session-policy.js",
+    "./tools": "./lib/tools.js",
+    "./work-store": "./lib/work-store.js",
+    "./workspace-index": "./lib/workspace-index.js",
+    "./workspace-service": "./lib/workspace-service.js",
+    "./package.json": "./package.json",
+    "./character-boundary": "./lib/character-boundary.js"
+  },
+  "files": [
+    "lib/**/*.js",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": []
+    }
+  },
+  "engines": {
+    "dsh": ">=0.2.1-rc.5 <0.3.0"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "license": "MIT"
+}

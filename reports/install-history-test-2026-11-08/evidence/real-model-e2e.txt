@@ -1,0 +1,6 @@
+真实模型 Manager 工具链测试（2026-11-09）
+- 会话：新建 Manager preset（Superbot · manager）
+- 用户提示：只调用一次 superbot_fleet_status 工具，然后用一句话汇报当前项目/线程数量。不要派工、不要改代码、不要新建任务。
+- 模型最终回复：共 2 个项目、3 条线程（任务 3 个：进行中 1、待验收 1、已完成 1），另有 1 个 worker 运行中、1 项待你验收。
+- 结论：真实 DeepSeek 模型在 DSH 0.2.1-rc.5 下成功调用 Superbot 工具并基于账本事实汇报；preset/工具面/账本读取全链路 PASS。
+- 截图：reports/store-v1/06-real-model-session.png

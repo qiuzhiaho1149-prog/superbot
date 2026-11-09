@@ -1,0 +1,22 @@
+# dsh-superbot bundle rows.
+#
+# 1) dsh-superbot — host plugin: persisted work ledger, agent preset
+#    registration (manager/worker/verifier), dedupe hook, config + status routes.
+#    This row registers NO tools: on preset surfaces tools are mounted inside
+#    each preset's Agent scope by `dsh-superbot/preset-tools`.
+#
+# 2) dsh-superbot-global-tools — legacy tool surface for profiles WITHOUT the
+#    agent-presets registry (the shipped headless profile). Disabled on every
+#    preset surface so tools can never leak into standard sessions.
+#
+# Preset rows are registered programmatically from lib/presets.js; they do not
+# appear here (the preset definition is code, its child plugin rows are data).
+- insert:
+    - id: dsh-superbot
+      name: dsh-superbot
+      config:
+        dedupeToolResults: true
+
+    - id: dsh-superbot-global-tools
+      name: dsh-superbot/global-tools
+      disabled: !!js (ctx.get('profileContext')?.startedBundles ?? []).includes('@deepseek-ai/dsh-web-app')

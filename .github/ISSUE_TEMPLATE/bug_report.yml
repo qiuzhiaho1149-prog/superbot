@@ -1,0 +1,44 @@
+name: Bug report / 缺陷
+description: Something behaves incorrectly. / 功能不符合预期
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请先确认：用 `/superbot/status` 检查 `mode/policy/runtime`，并附上 DSH 版本。
+        Please attach DSH version and `/superbot/status` output.
+  - type: input
+    id: dsh
+    attributes:
+      label: DSH version
+      placeholder: 0.2.1-rc.5 / 0.2.2-rc.1
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: 具体现象、期望结果、最小复现步骤。
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / screenshots
+      description: 面板截图、`/superbot/status`、相关账本事件（可脱敏）。
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - panel / UI
+        - onboarding / history import
+        - dispatch / worker / verifier
+        - review / acceptance
+        - ledger / persistence
+        - install / compatibility
+        - docs
+    validations:
+      required: true

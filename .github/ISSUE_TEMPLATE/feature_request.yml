@@ -1,0 +1,30 @@
+name: Feature request / 需求
+description: Propose a capability or workflow. / 想要的能力或流程
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / 你现在的痛点
+      description: 你希望 Superbot 帮你完成什么？现在卡在哪里？
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal / 你期望的方式
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - panel / UI
+        - onboarding / history
+        - dispatch / audit
+        - acceptance / rework
+        - install / compatibility
+        - docs / examples
+    validations:
+      required: true

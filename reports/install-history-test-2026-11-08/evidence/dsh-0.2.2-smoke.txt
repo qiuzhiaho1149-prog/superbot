@@ -1,0 +1,7 @@
+DSH 0.2.2-rc.1 core smoke (plugin bundled via profile)
+dsh web: http://127.0.0.1:62857/?token=<redacted>
+
+status:
+{"schemaVersion":1,"stateDir":"/tmp/sb-022-home/storages/dsh-superbot","mode":"preset-scoped","presets":{"manager":{"id":"superbot-manager","registered":true},"worker":{"id":"superbot-worker","registered":true},"verifier":{"id":"superbot-verifier","registered":true}},"legacyGlobalTools":null,"personaBoundaries":{"worker":{"registered":["legacy:persona","legacy:persona-suffix","deployment:persona-prefix","deployment:persona-suffix"],"skipped":false,"role":"worker"},"verifier":{"registered":["legacy:persona","legacy:persona-suffix","deployment:persona-prefix","deployment:persona-suffix"],"sk
+onboarding:
+{"generatedAt":"2026-11-09T04:57:30.996Z","readOnly":true,"confirmationRequired":true,"confirmation":null,"projects":[{"projectId":"3395e31b-5d50-485f-8c23-96c9a8f3d935","title":"proj-fix-2","path":"/private/tmp/sb-deploy/proj-fix-2","phase":"active","inInventory":true,"proposedStatus":"active","proposedReasons":["6 个线程可能正在运行"],"lastActiveAt":"2026-11-09T04:55:22.464Z","counts":{
