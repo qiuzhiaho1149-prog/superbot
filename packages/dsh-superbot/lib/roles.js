@@ -60,6 +60,7 @@ export const TOOL_NAMES = Object.freeze({
   dispatchVerifier: 'superbot_dispatch_verifier',
   acceptanceRun: 'superbot_acceptance_run',
   taskAccept: 'superbot_task_accept',
+  taskReject: 'superbot_task_reject',
   taskRework: 'superbot_task_rework',
   taskCancel: 'superbot_task_cancel',
   historyImport: 'superbot_history_import',
@@ -73,7 +74,7 @@ const {
   taskSubmit, taskPlan, taskList, taskGet, taskClaim, taskReview, taskReport,
   reportList, runList, runFinish, reviewSubmit, reviewList, auditExport,
   workRebuild, handoff, projectHandoff, projectProfile, projectList, projectMatch, projectOverview, dispatchWorker,
-  dispatchVerifier, acceptanceRun, taskAccept, taskRework, taskCancel, historyImport, fleetStatus, onboardingScan, onboardingConfirm,
+  dispatchVerifier, acceptanceRun, taskAccept, taskReject, taskRework, taskCancel, historyImport, fleetStatus, onboardingScan, onboardingConfirm,
 } = TOOL_NAMES
 
 /**
@@ -83,7 +84,7 @@ const {
 export const ROLE_TOOLS = Object.freeze({
   manager: Object.freeze([
     requirementSubmit, requirementList, specRecord, planCreate, planGet, planDispatch,
-    taskSubmit, taskPlan, taskList, taskGet, taskClaim, taskReview, taskAccept, taskRework, taskCancel, historyImport, fleetStatus, taskReport,
+    taskSubmit, taskPlan, taskList, taskGet, taskClaim, taskReview, taskAccept, taskReject, taskRework, taskCancel, historyImport, fleetStatus, taskReport,
     reportList, runList, runFinish, reviewList, auditExport, workRebuild, handoff, projectHandoff, projectProfile,
     projectList, projectMatch, projectOverview, onboardingScan, onboardingConfirm,
     dispatchWorker, dispatchVerifier,

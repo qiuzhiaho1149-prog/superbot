@@ -324,6 +324,33 @@ export function createTaskTools({ getConfig = () => ({}), store, ctx } = {}) {
       },
     },
     {
+      name: TOOL_NAMES.taskReject,
+      description: 'Ask the HUMAN to reject an in_review task through the host approval dialog. On approval the ledger records a human reject and moves the task back to in_progress for rework. Use only when the boss explicitly wants changes; never for hiding failures.',
+      parameters: {
+        type: 'object', additionalProperties: false, required: ['id'],
+        properties: { id: { type: 'string' }, note: { type: 'string', description: 'Rejection reason shown to the human and stored in the ledger.' } },
+      },
+      output: objectOutput,
+      async execute(args, exec) {
+        enabledOrThrow(getConfig)
+        const task = requireTask(store, args.id)
+        if (task.status !== 'in_review') throw new Error(`task ${args.id} is ${task.status}; only an in-review task can be rejected`)
+        const approval = typeof ctx?.get === 'function' ? ctx.get('approval') : undefined
+        if (approval === undefined || typeof approval.request !== 'function') {
+          throw new Error('host approval is unavailable; reject this task from the Superbot panel (POST /superbot/reject)')
+        }
+        const coverage = store.evidenceCoverage(task.id)
+        const outcome = await approval.request({
+          agent: exec?.agent,
+          toolName: TOOL_NAMES.taskReject,
+          reason: `人工退回 ${task.id}「${task.title}」：证据 ${coverage.rows.filter((row) => row.passed).length}/${coverage.commandCount}${args.note === undefined ? '' : `；${args.note}`}`,
+          ...(exec?.signal === undefined ? {} : { signal: exec.signal }),
+        })
+        if (outcome !== 'allowed-once') return { rejected: false, outcome, task }
+        return { rejected: true, outcome, ...store.rejectTaskByHuman(task.id, { ...(args.note === undefined ? {} : { note: args.note }) }) }
+      },
+    },
+    {
       name: TOOL_NAMES.taskReport,
       description: 'Record a worker/manager report for a task in the ledger (summary + evidence).',
       parameters: {

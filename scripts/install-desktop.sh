@@ -4,7 +4,7 @@
 # it into the desktop profile via the app's bundled CLI. No repo checkout needed.
 set -eu
 
-VERSION="${SUPERBOT_VERSION:-1.3.0}"
+VERSION="${SUPERBOT_VERSION:-1.4.0}"
 BASE="https://github.com/qiuzhiaho1149-prog/superbot/releases/download/v${VERSION}"
 DSH_HOME="${DSH_HOME:-$HOME/.dsh}"
 PROFILE_DIR="$DSH_HOME/profiles/desktop"

@@ -454,6 +454,20 @@ describe('review isolation: acceptance', () => {
     assert.equal(accepted.review.reviewerRole, 'human')
   })
 
+  it('rejects by human through the host approval dialog, moving the task back for rework', async () => {
+    const env = build()
+    const { taskId } = seedTask(env, { tags: ['aesthetic'] })
+    const evaluated = env.byName(env.manager, 'superbot_task_review').execute({ id: taskId })
+    assert.equal(evaluated.status, 'in_review')
+    const rejected = await env.byName(env.manager, 'superbot_task_reject').execute({ id: taskId, note: '颜色不对' }, { agent: { id: 'manager-session' } })
+    assert.equal(rejected.rejected, true)
+    assert.equal(rejected.task.status, 'in_progress')
+    const review = env.store.listReviews({ taskId }).at(-1)
+    assert.equal(review.source, 'human')
+    assert.equal(review.verdict, 'pending')
+    assert.ok(review.decision.reasons.includes('human-reject'))
+  })
+
   it('ignores a hand-forged task transition on reload', () => {
     const env = build()
     const { taskId } = seedTask(env)
