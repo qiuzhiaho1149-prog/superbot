@@ -37,7 +37,11 @@ for candidate in "/Applications/DeepSeek Harness.app" "$HOME/Applications/DeepSe
 done
 [ -n "$APP" ] || fail "DeepSeek Harness desktop app not found in /Applications (macOS only for now)"
 CLI="$APP/Contents/Resources/runtime/cli/bin/dsh"
-"$CLI" --version >/dev/null 2>&1 || fail "the app's bundled CLI is not runnable: $CLI"
+APP_VERSION="$("$CLI" --version 2>/dev/null | head -1 | tr -d '[:space:]')" || fail "the app's bundled CLI is not runnable: $CLI"
+case "$APP_VERSION" in
+  0.2.*) : ;;
+  *) fail "unsupported DeepSeek Harness version: ${APP_VERSION:-unknown} (Superbot supports 0.2.1-rc.5 through 0.2.x; update the desktop app)" ;;
+esac
 
 # 2. Quit check (the app must not rewrite the profile while we install).
 if pgrep -f "$APP/Contents/MacOS/DeepSeek Harness" >/dev/null 2>&1 && [ "${SUPERBOT_ALLOW_RUNNING:-0}" != "1" ]; then
@@ -49,7 +53,17 @@ fi
 
 if [ "${UNINSTALL:-0}" = "1" ]; then
   info "Removing Superbot from the desktop profile (ledger and handoffs are kept)..."
-  "$CLI" plugin --profile desktop remove dsh-superbot
+  NODE_BIN="$APP/Contents/MacOS/DeepSeek Harness"
+  PROFILE_FILE="$PROFILE_DIR/package.json" MODE=uninstall \
+  ELECTRON_RUN_AS_NODE=1 "$NODE_BIN" -e '
+    const fs = require("fs")
+    const file = process.env.PROFILE_FILE
+    const pkg = JSON.parse(fs.readFileSync(file, "utf8"))
+    if (pkg.dependencies) delete pkg.dependencies["dsh-superbot"]
+    if (pkg.dsh?.profile?.bundles) pkg.dsh.profile.bundles = pkg.dsh.profile.bundles.filter((name) => name !== "dsh-superbot")
+    fs.writeFileSync(file, JSON.stringify(pkg, null, 2) + "\n")
+  '
+  rm -rf "$PROFILE_DIR/node_modules/dsh-superbot"
   info "Removed. Reopen DeepSeek Harness; superbot storage remains at $DSH_HOME/storages/dsh-superbot."
   exit 0
 fi
@@ -67,16 +81,48 @@ curl -fL --retry 2 -o "$TGZ.SHA256SUMS" "$BASE/SHA256SUMS" || fail "checksum dow
 mv "$TGZ.part" "$TGZ"
 ( cd "$INSTALL_DIR" && cp "$TGZ.SHA256SUMS" SHA256SUMS && if command -v shasum >/dev/null 2>&1; then shasum -a 256 -c SHA256SUMS; else sha256sum -c SHA256SUMS; fi ) >/dev/null || { rm -f "$TGZ"; fail "checksum mismatch"; }
 
-# 5. Back up, install, verify bundle registration.
+# 5. Install WITHOUT running the profile package manager.
+#    The tarball has zero npm dependencies (task-engine is vendored); running
+#    pnpm/pnpm-add would re-resolve the user's OTHER dependencies and can fail
+#    offline or prune packages -> the reported "missing dependency" installs.
 STAMP="$(date +%Y%m%d%H%M%S)"
 cp "$PROFILE_DIR/package.json" "$PROFILE_DIR/package.json.bak.$STAMP"
 [ -f "$PROFILE_DIR/pnpm-lock.yaml" ] && cp "$PROFILE_DIR/pnpm-lock.yaml" "$PROFILE_DIR/pnpm-lock.yaml.bak.$STAMP" || true
-info "Installing into desktop profile..."
-"$CLI" plugin --profile desktop add "$TGZ" || fail "plugin install failed"
+
+NODE_BIN="$APP/Contents/MacOS/DeepSeek Harness"
+[ -x "$NODE_BIN" ] || fail "desktop runtime not found: $NODE_BIN"
+edit_profile() {
+  PROFILE_FILE="$PROFILE_DIR/package.json" TGZ_PATH="$TGZ" MODE="$1" \
+  ELECTRON_RUN_AS_NODE=1 "$NODE_BIN" -e '
+    const fs = require("fs")
+    const file = process.env.PROFILE_FILE
+    const tgz = process.env.TGZ_PATH
+    const mode = process.env.MODE
+    const pkg = JSON.parse(fs.readFileSync(file, "utf8"))
+    pkg.dependencies ??= {}
+    pkg.dsh ??= {}
+    pkg.dsh.profile ??= {}
+    pkg.dsh.profile.bundles ??= []
+    if (mode === "install") {
+      pkg.dependencies["dsh-superbot"] = "file:" + tgz
+      if (!pkg.dsh.profile.bundles.includes("dsh-superbot")) pkg.dsh.profile.bundles.push("dsh-superbot")
+    } else {
+      delete pkg.dependencies["dsh-superbot"]
+      pkg.dsh.profile.bundles = pkg.dsh.profile.bundles.filter((name) => name !== "dsh-superbot")
+    }
+    fs.writeFileSync(file, JSON.stringify(pkg, null, 2) + "\n")
+  ' || fail "could not update profile package.json"
+}
+
+info "Installing into desktop profile (no package-manager resolution)..."
+rm -rf "$PROFILE_DIR/node_modules/dsh-superbot"
+mkdir -p "$PROFILE_DIR/node_modules/dsh-superbot"
+tar -xzf "$TGZ" -C "$PROFILE_DIR/node_modules/dsh-superbot" --strip-components=1 || fail "could not extract the plugin tarball"
+edit_profile install
 grep -q '"dsh-superbot"' "$PROFILE_DIR/package.json" || fail "dsh-superbot is missing from profile dependencies"
 grep -q 'dsh-superbot' "$PROFILE_DIR/package.json" || fail "dsh-superbot is missing from profile bundles"
 info ""
-info "Installed Superbot v${VERSION}."
+info "Installed Superbot v${VERSION} (self-contained; no npm dependencies)."
 info "Reopen DeepSeek Harness → sidebar “Superbot” → 首次接入盘点."
 info "Tarball kept at: $TGZ (do not delete it; the profile references it)"
 info "Rollback: restore $PROFILE_DIR/package.json.bak.$STAMP and run: sh $0 --uninstall"
