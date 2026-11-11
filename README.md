@@ -4,7 +4,7 @@
 > A chief-of-staff agent for DSH: one chat, many projects/threads, ledger-backed tasks and automatic audits.
 
 [![CI](https://github.com/qiuzhiaho1149-prog/superbot/actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
-**149 + 18 tests passing** · MIT · DSH CLI 0.2.1-rc.5 / core 0.2.2-rc.1
+**162 + 18 tests passing** · MIT · DSH CLI 0.2.1-rc.5 / core 0.2.2-rc.1
 
 ![任务面板](reports/store-v1/01-tasks-dark.png)
 
@@ -27,18 +27,30 @@
 
 ![线程地图](reports/store-v1/02-map-dark.png)
 
-## 安装
+## 安装（桌面 App，推荐普通人用这个）
 
-从 [Releases](../../releases) 下载 `dsh-superbot-1.0.0.tgz`（自包含，无第三方依赖）：
+**需要**：macOS + 已安装 DeepSeek Harness 桌面 App（0.2.x）。不需要 Node、npm、git 或本地仓库。
 
+1. **完全退出** DeepSeek Harness（Cmd+Q）。
+2. 打开「终端」，粘贴下面两行并回车：
+   ```bash
+   curl -fL -o /tmp/superbot-install.sh \
+     "https://github.com/qiuzhiaho1149-prog/superbot/releases/download/v1.4.0/install-desktop.sh"
+   sh /tmp/superbot-install.sh
+   ```
+3. 重新打开 DeepSeek Harness → 左侧点「Superbot」→ 按提示做「首次接入盘点」→ 确认后开始用。
+
+安装器会自动：校验安装包 → 备份配置 → 解压插件到 desktop profile → 登记启动项。
+**不会运行 npm/pnpm**，不会动你其他插件的依赖；也不需要把任何文件发给我们。
+
+卸载（保留账本和项目交接文件）：
 ```bash
-cd "$DSH_HOME/profiles/web"
-npm install /abs/path/dsh-superbot-1.0.0.tgz
-# profile package.json → dsh.profile.bundles 加入 "dsh-superbot"
-DSH_HOME="$DSH_HOME" dsh --profile web --no-open --port 0
+sh /tmp/superbot-install.sh --uninstall
 ```
 
-首次启动：面板 →「首次接入盘点」确认项目状态 → 「进入 Superbot 对话」。
+安装失败？看 [安装文档的排错](docs/INSTALL.md#常见问题)，或带上 App 版本、终端报错原文开 Issue。
+
+> 没有桌面 App / 想在 CLI profile 使用：见 [CLI 安装](docs/INSTALL.md#cli-profile高级)。
 
 ## 架构（为什么它不会变成 Agent 自夸）
 
